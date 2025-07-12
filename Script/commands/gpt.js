@@ -4,9 +4,9 @@ module.exports.config = {
  name: "gpt",
  version: "1.0",
  hasPermission: 0,
- credits: "Islamick Chat",
+ credits: "RASEL",
  usePrefix: false,
- description: "M H BD AI",
+ description: "Mst Friday Ai",
  commandCategory: "General",
  cooldowns: 2,
 };
