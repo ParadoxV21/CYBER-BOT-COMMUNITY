@@ -1,41 +1,54 @@
-const axios = require('axios');
+const axios = require("axios");
 
 module.exports.config = {
- name: "gpt",
- version: "1.0",
- hasPermission: 0,
- credits: "RASEL",
- usePrefix: false,
- description: "Mst Friday Ai",
- commandCategory: "General",
- cooldowns: 2,
+  name: "kluster",
+  version: "1.0",
+  hasPermission: 0,
+  credits: "RASEL + ChatGPT",
+  usePrefix: false,
+  description: "Talk with Kluster AI",
+  commandCategory: "AI",
+  cooldowns: 2,
 };
 
-const API_SERVER_URL = 'https://sensui-useless-apis.codersensui.repl.co/api/tools/ai';
+const API_KEY = "46a5eeae-7374-424e-ab4d-9258806d21ca"; // ⚠️ Replace later if needed
+const MODEL = "klusterai/Meta-Llama-3.1-8B-Instruct-Turbo";
 
 module.exports.run = async ({ api, event, args }) => {
- try {
- const question = args.join(' ');
+  try {
+    const prompt = args.join(" ");
+    if (!prompt) {
+      return api.sendMessage("🧠 প্রশ্ন দিন যেমন: kluster কেমন আছো?", event.threadID);
+    }
 
- if (!question) {
- return api.sendMessage("আপনার প্রশ্ন টি gpt লিখে অ্যাড করুন: 📝", event.threadID);
- }
+    const res = await axios.post(
+      "https://api.kluster.ai/v1/chat/completions",
+      {
+        model: MODEL,
+        messages: [
+          {
+            role: "user",
+            content: prompt
+          }
+        ]
+      },
+      {
+        headers: {
+          "Authorization": `Bearer ${API_KEY}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
 
- const response = await axios.get(`${API_SERVER_URL}?question=${encodeURIComponent(question)}`);
+    const reply = res.data?.choices?.[0]?.message?.content;
+    if (reply) {
+      return api.sendMessage(`🤖 Kluster AI:\n${reply}`, event.threadID);
+    } else {
+      return api.sendMessage("⚠️ উত্তর পাওয়া যায়নি।", event.threadID);
+    }
 
- if (response.data.error) {
- return api.sendMessage("Oops! The AI encountered an error. Please try again later.", event.threadID);
- }
-
- const answer = response.data.answer;
-
- if (answer) {
- api.sendMessage(`${global.config.BOTNAME}\n𝐓𝐡𝐢𝐬 𝐢𝐬 𝐦𝐲 𝐀𝐧𝐬𝐰𝐞𝐫🙆‍♂️😌\n\n${answer}`, event.threadID);
- } else {
- api.sendMessage("There's something wrong. Please try again...", event.threadID);
- }
- } catch (error) {
- console.error('Error fetching response:', error);
- api.sendMessage("Error fetching response.", event.threadID);
- }
+  } catch (error) {
+    console.error("❌ Kluster API error:", error.response?.data || error.message);
+    return api.sendMessage("❌ Kluster API ব্যবহার করতে সমস্যা হয়েছে।", event.threadID);
+  }
 };
