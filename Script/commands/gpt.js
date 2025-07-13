@@ -18,7 +18,7 @@ module.exports.run = async ({ api, event, args }) => {
   try {
     const prompt = args.join(" ");
     if (!prompt) {
-      return api.sendMessage("🧠 প্রশ্ন দিন যেমন: kluster কেমন আছো?", event.threadID);
+      return api.sendMessage("🧠 প্রশ্ন দিন যেমন: তুমি কেমন আছো?", event.threadID);
     }
 
     const res = await axios.post(
@@ -42,7 +42,7 @@ module.exports.run = async ({ api, event, args }) => {
 
     const reply = res.data?.choices?.[0]?.message?.content;
     if (reply) {
-      return api.sendMessage(`🤖 Kluster AI:\n${reply}`, event.threadID);
+      return api.sendMessage(`🤖 Api Server AI:\n${reply}`, event.threadID);
     } else {
       return api.sendMessage("⚠️ উত্তর পাওয়া যায়নি।", event.threadID);
     }
